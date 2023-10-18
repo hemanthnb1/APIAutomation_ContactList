@@ -30,7 +30,7 @@ public class TestContact {
        token = TestUser.registerToken;
     }
 
-    @Test(priority = 0)
+    @Test(priority = 0,groups = "functional")
     public  void shouldAddContact() throws IOException {
         dataBuilder=new DataBuilder();
                 addContactResponse=given()
@@ -46,7 +46,7 @@ public class TestContact {
     }
 
 
-    @Test(priority = 1)
+    @Test(priority = 1,groups = "functional")
     public void  shouldGetContact() throws IOException {
         Response res=
                 given()
@@ -61,7 +61,7 @@ public class TestContact {
 
     }
 
-    @Test(priority = 2)
+    @Test(priority = 2,groups = "functional")
     public void  shouldGetContactList() throws IOException {
         Response res=
                 given()
@@ -79,7 +79,7 @@ public class TestContact {
 
 
 
-    @Test(priority = 3)
+    @Test(priority = 3,groups = "sanity")
     public void shouldUpdateContact() throws IOException {
 
         addContactResponse=given()
@@ -94,7 +94,7 @@ public class TestContact {
         Assert.assertEquals(addContactResponse.getfirstName(),"Assasin");
     }
 
-    @Test(priority = 4)
+    @Test(priority = 4,groups = "sanity")
     public void shouldUpdateContactWithAllData() throws IOException {
 
      addContactResponse=given()
@@ -111,7 +111,7 @@ public class TestContact {
 
     }
 
-    @Test(priority = 5)
+    @Test(priority = 5,groups = "sanity")
     public  void shouldDeleteContact() throws IOException {
         Response res =given()
                 .header("Authorization","Bearer "+token)

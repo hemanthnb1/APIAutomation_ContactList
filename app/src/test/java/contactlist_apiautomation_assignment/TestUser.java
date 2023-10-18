@@ -42,7 +42,7 @@ public class TestUser {
 
 
 
-    @Test(priority = 0)
+    @Test(priority = 0,groups = "functional")
     public void shouldTestCreateUser() throws IOException {
         createUsersResponseBody=given().
                 spec(Utils.requestSpecBuilder())
@@ -55,7 +55,7 @@ public class TestUser {
         Assert.assertEquals(createUsersResponseBody.getUser().getFirstName(), userFirstName);
     }
 
-    @Test(priority = 1)
+    @Test(priority = 1,groups = "functional")
     void shouldGetUser() throws IOException {
         user=given()
                 .header("Authorization", "Bearer "+ registerToken)
@@ -69,7 +69,7 @@ public class TestUser {
         Assert.assertEquals(user.getFirstName(),userFirstName);
     }
 
-    @Test(priority = 2)
+    @Test(priority = 2,groups = "functional")
     public void shouldLoginUser() throws IOException {
 
                 createUsersResponseBody=given().header("Authorization","Bearer "+registerToken)
@@ -87,7 +87,7 @@ public class TestUser {
 
     }
 
-    @Test(priority = 3)
+    @Test(priority = 3,groups = "sanity")
     public void shouldTestUpdateUser() throws IOException {
         String updatedFirstName="Davy";
         String updatedLastName="Davy";
@@ -104,7 +104,7 @@ public class TestUser {
     }
 
 
-    @Test(priority = 4)
+    @Test(priority = 4, groups = "sanity")
     public void shouldLogoutUser() throws IOException {
         Response res=
                 given().header("Authorization","Bearer "+loginToken)
@@ -117,7 +117,7 @@ public class TestUser {
     }
 
 
-    @Test(priority = 5)
+    @Test(priority = 5,groups = "sanity")
     public  void  shoudDeleteUsers() throws IOException {
 
         shouldLoginUser();
