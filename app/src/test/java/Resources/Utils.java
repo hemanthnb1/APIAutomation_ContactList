@@ -65,6 +65,16 @@ public class Utils {
         return  new Faker().internet().password();
     }
 
+    public  static  String generateFirstname(){
+        return  new Faker().name().firstName();
+    }
 
+    public  static  String generateLastname(){
+        return  new Faker().name().lastName();
+    }
+
+    public static  String generatephno(){
+        return new Faker().number().digits(10);
+    }
 
 }

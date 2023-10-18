@@ -8,6 +8,7 @@ import com.github.javafaker.Faker;
 import io.restassured.response.Response;
 import io.restassured.specification.RequestSpecification;
 import org.testng.Assert;
+import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 
 import java.io.IOException;
@@ -16,25 +17,33 @@ import static io.restassured.RestAssured.given;
 import static io.restassured.RestAssured.put;
 
 public class TestUser {
-    Faker faker;
     CreateUsersResponsePOJO createUsersResponseBody;
     User user;
 
     DataBuilder dataBuilder;
-    String registerToken =null;
-    String loginToken=null;
-    String userFirstName="Hemanth";
-    String userLastName="N B";
+    public  static String registerToken =null;
 
-    String email=Utils.generateEmail();
-    String password=Utils.generatePassword();
+    public  static String loginToken=null;
+    String userFirstName;
+    String userLastName;
 
+    String email;
+    String password;
+
+    @BeforeClass
+   public TestUser setup(){
+         dataBuilder = new DataBuilder();
+        userFirstName="Hemanth";
+        userLastName="N B";
+        email=Utils.generateEmail();
+        password=Utils.generatePassword();
+        return this;
+    }
 
 
 
     @Test(priority = 0)
     public void shouldTestCreateUser() throws IOException {
-         dataBuilder = new DataBuilder();
         createUsersResponseBody=given().
                 spec(Utils.requestSpecBuilder())
                 .body(dataBuilder.createUsers(userFirstName, userLastName, email, password))
@@ -43,7 +52,7 @@ public class TestUser {
                 .extract().response().as(CreateUsersResponsePOJO.class);
 
         registerToken = createUsersResponseBody.getToken();
-        Assert.assertEquals(createUsersResponseBody.getUser().getFirstName(), "Hemanth");
+        Assert.assertEquals(createUsersResponseBody.getUser().getFirstName(), userFirstName);
     }
 
     @Test(priority = 1)
@@ -57,11 +66,11 @@ public class TestUser {
                 .spec(Utils.responseSpecificationBuilder())
                 .extract().response().as(User.class);
 
-        Assert.assertEquals(user.getFirstName(),"Hemanth");
+        Assert.assertEquals(user.getFirstName(),userFirstName);
     }
 
     @Test(priority = 2)
-    void shouldLoginUser() throws IOException {
+    public void shouldLoginUser() throws IOException {
 
                 createUsersResponseBody=given().header("Authorization","Bearer "+registerToken)
                         .spec(Utils.requestSpecBuilder())
@@ -71,13 +80,18 @@ public class TestUser {
                         .then()
                         .extract().response().as(CreateUsersResponsePOJO.class);
                 loginToken=createUsersResponseBody.getToken();
-        System.out.println(loginToken);
-        Assert.assertEquals(user.getFirstName(),"Hemanth");
+
+//        System.out.println(loginToken);
+        Assert.assertEquals(user.getFirstName(),userFirstName);
+//        return  this;
 
     }
 
     @Test(priority = 3)
     public void shouldTestUpdateUser() throws IOException {
+        String updatedFirstName="Davy";
+        String updatedLastName="Davy";
+
         user=given().
                 header("Authorization", "Bearer "+loginToken).
                 spec(Utils.requestSpecBuilder())
@@ -85,8 +99,8 @@ public class TestUser {
                 .when().patch(APIResources.UpdateUserAPI.getResource())
                 .then().spec(Utils.responseSpecificationBuilder())
                 .extract().response().as(User.class);
-
-        Assert.assertEquals(user.getFirstName(), "Davy");
+        Assert.assertEquals(user.getFirstName(), updatedFirstName);
+        userFirstName=updatedFirstName;
     }
 
 
@@ -102,6 +116,22 @@ public class TestUser {
         Assert.assertEquals(res.getStatusCode(),200);
     }
 
+
+    @Test(priority = 5)
+    public  void  shoudDeleteUsers() throws IOException {
+
+        shouldLoginUser();
+        Response res=
+                given().
+                        header("Authorization","Bearer "+loginToken).
+                        spec(Utils.requestSpecBuilder())
+                        .body(dataBuilder.loginUser(email,password))
+                        .when()
+                        .delete(APIResources.DeleteUserAPI.getResource())
+                        .then()
+                        .extract().response();
+        Assert.assertEquals(res.getStatusCode(),200);
+    }
 
 
 
